@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import { connect } from "./config";
 import { Meldungen } from "./entity/Meldungen";
+import { Between } from "typeorm";
 const auth = require("./validateFirebaseIdToken");
 
 export const getMeldung = functions.https.onRequest(async (req, res) => {
@@ -11,8 +12,10 @@ export const getMeldung = functions.https.onRequest(async (req, res) => {
     const connection = await connect();
     const meldungenRepo = connection.getRepository(Meldungen);
     // all rows
-    const allMeldungen = await meldungenRepo.find();
+    const allMeldungen = await meldungenRepo.find({
+      datum: Between(new Date("2018-04-05"), new Date("2018-04-07"))
+    });
 
-    res.status(200).send({ data: { allMeldungen } });
+    res.status(200).json({ data: allMeldungen });
   }
 });

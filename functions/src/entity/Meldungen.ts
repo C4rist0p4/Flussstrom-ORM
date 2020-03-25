@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
 
 @Entity()
 export class Meldungen extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @Column("int")
   fk_anlagen: number;
 
   @Column("double")
@@ -16,6 +16,6 @@ export class Meldungen extends BaseEntity {
   })
   bemerkungMel: string;
 
-  @Column("date")
+  @PrimaryGeneratedColumn()
   timestamp_device: Date;
 }
