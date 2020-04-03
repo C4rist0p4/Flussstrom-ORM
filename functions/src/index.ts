@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import { connect } from "./config";
 import { Meldungen } from "./entity/Meldungen";
+import { Benutzer } from "./entity/Benutzer";
 import { Between } from "typeorm";
 const auth = require("./validateFirebaseIdToken");
 
@@ -17,5 +18,23 @@ export const getMeldung = functions.https.onRequest(async (req, res) => {
     });
 
     res.status(200).json({ data: allMeldungen });
+  }
+});
+
+export const checkUsers = functions.https.onRequest(async (req, res) => {
+  const { name, password } = req.body.data;
+
+  const connection = await connect();
+  const usersRepo = connection.getRepository(Benutzer);
+
+  const user = await usersRepo.findOne({
+    Anmeldename: name,
+    Passwort: password
+  });
+
+  if (user == null) {
+    res.status(200).json({ data: "false" });
+  } else {
+    res.status(200).json({ data: "true" });
   }
 });
