@@ -19,4 +19,7 @@ export class Benutzer {
 
   @Column()
   idPerson: number;
+
+  @Column()
+  idDevice: string;
 }
