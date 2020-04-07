@@ -35,7 +35,7 @@ export const checkUsers = functions.https.onRequest(async (req, res) => {
   if (user == null) {
     res.status(200).json({ data: "false" });
   } else {
-    res.status(200).json({ data: "true" });
+    res.status(200).json({ data: "user true" });
   }
 });
 
@@ -55,6 +55,6 @@ export const setIdDevice = functions.https.onRequest(async (req, res) => {
     user.idDevice = idDevice;
     await usersRepo.save(user);
 
-    res.status(200).json({ data: "true" });
+    res.status(200).json({ data: "Id Device set" });
   }
 });
