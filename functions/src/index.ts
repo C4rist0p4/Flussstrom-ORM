@@ -3,10 +3,10 @@ import { connect } from "./config";
 import { Meldungen } from "./entity/Meldungen";
 import { Benutzer } from "./entity/Benutzer";
 const auth = require("./validateFirebaseIdToken");
-
+//umschreiben
 export const getMeldung = functions.https.onRequest(async (req, res) => {
   const result = await auth(req, res);
-  if (result == false) {
+  if (result === false) {
     res.status(403).send("Unauthorized");
   } else {
     const { fk_anlagen } = req.body.data;
@@ -24,8 +24,9 @@ export const getMeldung = functions.https.onRequest(async (req, res) => {
   }
 });
 
-export const checkUsers = functions.https.onRequest(async (req, res) => {
-  const { name, password } = req.body.data;
+export const checkUsers = functions.https.onCall(async (req) => {
+  const name = req.name;
+  const password = req.password;
 
   const connection = await connect();
   const usersRepo = connection.getRepository(Benutzer);
@@ -35,17 +36,19 @@ export const checkUsers = functions.https.onRequest(async (req, res) => {
     Passwort: password,
   });
 
-  if (user == null) {
-    res.status(200).json({ data: "false" });
+  if (user === undefined) {
+    return { message: "false" };
   } else {
-    res.status(200).json({ data: "user true" });
+    return { message: "true" };
   }
 });
-
-export const setIdDevice = functions.https.onRequest(async (req, res) => {
-  const result = await auth(req, res);
-  if (result == false) {
-    res.status(403).send("Unauthorized");
+//testen
+export const setIdDevice = functions.https.onCall(async (req, res) => {
+  if (!res.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called " + "while authenticated."
+    );
   } else {
     const { name, idDevice } = req.body.data;
     const connection = await connect();
@@ -58,6 +61,6 @@ export const setIdDevice = functions.https.onRequest(async (req, res) => {
     user.idDevice = idDevice;
     await usersRepo.save(user);
 
-    res.status(200).json({ data: "Id Device set" });
+    return { message: "Id Device set", idBenutzer: user.idBenutzer };
   }
 });
