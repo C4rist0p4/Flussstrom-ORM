@@ -2,14 +2,16 @@ import * as functions from "firebase-functions";
 import { connect } from "./config";
 import { Meldungen } from "./entity/Meldungen";
 import { Benutzer } from "./entity/Benutzer";
-const auth = require("./validateFirebaseIdToken");
-//umschreiben
-export const getMeldung = functions.https.onRequest(async (req, res) => {
-  const result = await auth(req, res);
-  if (result === false) {
-    res.status(403).send("Unauthorized");
+import { Ansicht } from "./entity/Ansicht";
+
+export const getMeldung = functions.https.onCall(async (req, res) => {
+  if (!res.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called " + "while authenticated."
+    );
   } else {
-    const { fk_anlagen } = req.body.data;
+    const fk_anlagen = req.fk_anlagen;
     const connection = await connect();
     const meldungenRepo = connection.getRepository(Meldungen);
 
@@ -20,7 +22,7 @@ export const getMeldung = functions.https.onRequest(async (req, res) => {
       .take(3)
       .getMany();
 
-    res.status(200).json({ data: allMeldungen });
+    return { allmeldungen: allMeldungen };
   }
 });
 
@@ -42,7 +44,7 @@ export const checkUsers = functions.https.onCall(async (req) => {
     return { message: "true" };
   }
 });
-//testen
+
 export const setIdDevice = functions.https.onCall(async (req, res) => {
   if (!res.auth) {
     throw new functions.https.HttpsError(
@@ -50,7 +52,8 @@ export const setIdDevice = functions.https.onCall(async (req, res) => {
       "The function must be called " + "while authenticated."
     );
   } else {
-    const { name, idDevice } = req.body.data;
+    const name = req.name;
+    const idDevice = req.idDevice;
     const connection = await connect();
     const usersRepo = connection.getRepository(Benutzer);
 
@@ -61,6 +64,17 @@ export const setIdDevice = functions.https.onCall(async (req, res) => {
     user.idDevice = idDevice;
     await usersRepo.save(user);
 
-    return { message: "Id Device set", idBenutzer: user.idBenutzer };
+    const iduser = user.idBenutzer;
+
+    const ansichtRepo = connection.getRepository(Ansicht);
+    const ansicht = await ansichtRepo.findOne({
+      FK_Benutzer: iduser,
+    });
+
+    return {
+      message: "Id Device set",
+      idBenutzer: iduser,
+      anlage: ansicht.FK_Anlage,
+    };
   }
 });
