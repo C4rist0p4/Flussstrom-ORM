@@ -3,6 +3,7 @@ import { connect } from "./config";
 import { Meldungen } from "./entity/Meldungen";
 import { Benutzer } from "./entity/Benutzer";
 import { Ansicht } from "./entity/Ansicht";
+import { Anlagen } from "./entity/Anlagen";
 
 export const getMeldung = functions.https.onCall(async (req, res) => {
   if (!res.auth) {
@@ -23,6 +24,27 @@ export const getMeldung = functions.https.onCall(async (req, res) => {
       .getMany();
 
     return { allmeldungen: allMeldungen };
+  }
+});
+
+export const getMachinery = functions.https.onCall(async (req, res) => {
+  if (!res.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called " + "while authenticated."
+    );
+  } else {
+    const idAnlage = req.idAnlage;
+    const connection = await connect();
+    const anlagenRepo = connection.getRepository(Anlagen);
+
+    const anlage = await anlagenRepo
+      .createQueryBuilder("anlagen")
+      .innerJoinAndSelect("anlagen.fk_anlagentyp", "fk_anlagentyp")
+      .where("anlagen.idAnlagen = :id", { id: idAnlage })
+      .getOne();
+
+    return anlage;
   }
 });
 
