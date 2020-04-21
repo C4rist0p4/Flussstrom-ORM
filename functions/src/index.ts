@@ -9,7 +9,7 @@ export const getMeldung = functions.https.onCall(async (req, res) => {
   if (!res.auth) {
     throw new functions.https.HttpsError(
       "failed-precondition",
-      "The function must be called " + "while authenticated."
+      "The function must be called while authenticated."
     );
   } else {
     const fk_anlagen = req.fk_anlagen;
@@ -31,7 +31,7 @@ export const getMachinery = functions.https.onCall(async (req, res) => {
   if (!res.auth) {
     throw new functions.https.HttpsError(
       "failed-precondition",
-      "The function must be called " + "while authenticated."
+      "The function must be called while authenticated."
     );
   } else {
     const idAnlage = req.idAnlage;
@@ -67,11 +67,12 @@ export const checkUsers = functions.https.onCall(async (req) => {
   }
 });
 
+//iduser und FK_Anlage in andren funkrion abfragen
 export const setIdDevice = functions.https.onCall(async (req, res) => {
   if (!res.auth) {
     throw new functions.https.HttpsError(
       "failed-precondition",
-      "The function must be called " + "while authenticated."
+      "The function must be called while authenticated."
     );
   } else {
     const name = req.name;
@@ -86,17 +87,41 @@ export const setIdDevice = functions.https.onCall(async (req, res) => {
     user.idDevice = idDevice;
     await usersRepo.save(user);
 
+    return {
+      message: "Id Device set",
+    };
+  }
+});
+
+export const getUserData = functions.https.onCall(async (req, res) => {
+  if (!res.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  } else {
+    const name = req.name;
+    const connection = await connect();
+    const usersRepo = connection.getRepository(Benutzer);
+
+    const user = await usersRepo.findOne({
+      Anmeldename: name,
+    });
+
     const iduser = user.idBenutzer;
 
     const ansichtRepo = connection.getRepository(Ansicht);
-    const ansicht = await ansichtRepo.findOne({
-      FK_Benutzer: iduser,
+    const ansicht = await ansichtRepo.find({
+      select: ["FK_Anlage"],
+      where: {
+        FK_Benutzer: iduser,
+      },
     });
 
     return {
-      message: "Id Device set",
+      message: "Userdata",
       idBenutzer: iduser,
-      anlage: ansicht.FK_Anlage,
+      anlage: ansicht,
     };
   }
 });
