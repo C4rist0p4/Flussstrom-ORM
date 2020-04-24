@@ -34,17 +34,23 @@ export const getMachinery = functions.https.onCall(async (req, res) => {
       "The function must be called while authenticated."
     );
   } else {
-    const idAnlage = req.idAnlage;
+    const a = JSON.stringify(req);
+    const data = JSON.parse(a);
+    let anlagen = [];
+
     const connection = await connect();
     const anlagenRepo = connection.getRepository(Anlagen);
 
-    const anlage = await anlagenRepo
-      .createQueryBuilder("anlagen")
-      .innerJoinAndSelect("anlagen.fk_anlagentyp", "fk_anlagentyp")
-      .where("anlagen.idAnlagen = :id", { id: idAnlage })
-      .getOne();
-
-    return anlage;
+    for (const item of data.idAnlagen) {
+      anlagen.push(
+        await anlagenRepo
+          .createQueryBuilder("anlagen")
+          .innerJoinAndSelect("anlagen.fk_anlagentyp", "fk_anlagentyp")
+          .where("anlagen.idAnlagen = :id", { id: item.id })
+          .getOne()
+      );
+    }
+    return anlagen;
   }
 });
 
