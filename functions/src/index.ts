@@ -4,6 +4,32 @@ import { Meldungen } from "./entity/Meldungen";
 import { Benutzer } from "./entity/Benutzer";
 import { Ansicht } from "./entity/Ansicht";
 import { Anlagen } from "./entity/Anlagen";
+import { Messwerte } from "./entity/Messwerte";
+
+export const getMeasuring = functions.https.onCall(async (req, res) => {
+  if (!res.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  } else {
+    const fk_anlagen = req.idAnlage;
+    const connection = await connect();
+    const messwertenRepo = connection.getRepository(Messwerte);
+
+    const alltMeasuring = await messwertenRepo
+      .createQueryBuilder("messwerte")
+      .select("messwerte.messwert")
+      .addSelect("messwerte.datum")
+      .addSelect("messwerte.timestamp_device")
+      .where("messwerte.fk_anlagen = :id", { id: fk_anlagen })
+      .orderBy("messwerte.datum", "DESC")
+      .take(15)
+      .getMany();
+
+    return { measuring: alltMeasuring };
+  }
+});
 
 export const getMeldung = functions.https.onCall(async (req, res) => {
   if (!res.auth) {
