@@ -1,7 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Meldungen extends BaseEntity {
+export class Meldungen {
   @Column("int")
   fk_anlagen: number;
 
@@ -12,7 +12,7 @@ export class Meldungen extends BaseEntity {
   datum: Date;
 
   @Column({
-    length: 100
+    length: 100,
   })
   bemerkungMel: string;
 

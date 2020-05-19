@@ -1,13 +1,7 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  Timestamp,
-} from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, Timestamp } from "typeorm";
 
 @Entity()
-export class Messwerte extends BaseEntity {
+export class Messwerte {
   @PrimaryGeneratedColumn()
   idMesswerte: number;
 
