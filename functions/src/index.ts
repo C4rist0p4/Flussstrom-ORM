@@ -5,6 +5,7 @@ import { Benutzer } from "./entity/Benutzer";
 import { Ansicht } from "./entity/Ansicht";
 import { Anlagen } from "./entity/Anlagen";
 import { Messwerte } from "./entity/Messwerte";
+import { Bilder } from "./entity/Bilder";
 
 export const getMeasuring = functions.https.onCall(async (req, res) => {
   if (!res.auth) {
@@ -155,5 +156,27 @@ export const getUserData = functions.https.onCall(async (req, res) => {
       idBenutzer: iduser,
       anlage: ansicht,
     };
+  }
+});
+
+export const getPictures = functions.https.onCall(async (req, res) => {
+  if (!res.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  } else {
+    const fk_anlagen = req.fk_anlagen;
+
+    const connection = await connect();
+    const bilderRepo = connection.getRepository(Bilder);
+
+    const picture = await bilderRepo
+      .createQueryBuilder("bilder")
+      .where("bilder.fk_anlagen = :id", { id: fk_anlagen })
+      .orderBy("bilder.datum", "DESC")
+      .getOne();
+
+    return { pictureURL: picture.url };
   }
 });

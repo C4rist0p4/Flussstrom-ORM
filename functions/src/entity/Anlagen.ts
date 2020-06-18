@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  Timestamp,
 } from "typeorm";
 import { Anlagentyp } from "./Anlagentyp";
 
@@ -28,8 +29,8 @@ export class Anlagen {
   @Column()
   installationsort: string;
 
-  @Column()
-  inbetriebnahme: Date;
+  @Column("date")
+  inbetriebnahme: Timestamp;
 
   @Column()
   anlagenname: string;
