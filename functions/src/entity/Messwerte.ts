@@ -15,7 +15,7 @@ export class Messwerte {
   fk_komponente: number;
 
   @Column("date")
-  datum: Date;
+  datum: Timestamp;
 
   @Column("int")
   messwert: number;

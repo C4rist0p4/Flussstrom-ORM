@@ -46,6 +46,7 @@ export const getMeldung = functions.https.onCall(async (req, res) => {
     const allMeldungen = await meldungenRepo
       .createQueryBuilder("meldungen")
       .where("meldungen.fk_anlagen = :id", { id: fk_anlagen })
+      .innerJoinAndSelect("meldungen.fk_meldungstyp", "fk_meldungstyp")
       .orderBy("meldungen.datum", "DESC")
       .take(3)
       .getMany();
