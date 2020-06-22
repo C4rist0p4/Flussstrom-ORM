@@ -1,0 +1,21 @@
+### getMeldungen
+POST http://localhost:5001/projekt-f-545a1/us-central1/getMeldung HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJub25lIiwia2lkIjoiZmFrZWtpZCJ9.eyJ1aWQiOiJhbGljZSIsImVtYWlsIjoiYWxpY2VAZXhhbXBsZS5jb20iLCJpYXQiOjAsInN1YiI6ImFsaWNlIn0=.
+
+{
+    "data": {       
+        "fk_anlagen": "1"
+    }
+}
+
+### getMeasuring
+POST http://localhost:5001/projekt-f-545a1/us-central1/getMeasuring HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJub25lIiwia2lkIjoiZmFrZWtpZCJ9.eyJ1aWQiOiJhbGljZSIsImVtYWlsIjoiYWxpY2VAZXhhbXBsZS5jb20iLCJpYXQiOjAsInN1YiI6ImFsaWNlIn0=.
+
+{
+    "data": {       
+        "idAnlage": "2"
+    }
+}
